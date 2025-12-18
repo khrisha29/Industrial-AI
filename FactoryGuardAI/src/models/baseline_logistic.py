@@ -4,6 +4,7 @@
 # Project: FactoryGuard AI (Predictive Maintenance)
 # ============================================
 
+
 from pathlib import Path
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
@@ -98,3 +99,4 @@ Observations:
 - In predictive maintenance, missing a failure is costlier than a false alarm,
   hence recall and F1-score are more meaningful metrics.
 """
+
