@@ -23,3 +23,11 @@ The objective is to predict equipment failure 24 hours in advance using time-ser
 src/
 data/
 notebooks/
+
+## Week 2 – Modeling & Evaluation
+
+- Established a Logistic Regression baseline and observed severe class imbalance effects.
+- Evaluated ensemble methods including Random Forest, which collapsed to the majority class under rare failure conditions.
+- Implemented XGBoost with imbalance-aware weighting and probability-based evaluation.
+- Reframed failure prediction as a risk-scoring problem by ranking high-risk machine states instead of relying on hard thresholds.
+- Highlighted practical limitations of supervised learning under extreme rarity and discussed anomaly detection as future work.
