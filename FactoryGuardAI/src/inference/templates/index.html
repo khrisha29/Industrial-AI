@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FactoryGuard AI – Predictive Maintenance</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+
+            /* 🔥 BACKGROUND IMAGE */
+            background:
+                linear-gradient(
+                    rgba(15, 23, 42, 0.85),
+                    rgba(15, 23, 42, 0.85)
+                ),
+                url("/static/bg.jpg");
+
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: #111827;
+            padding: 30px;
+            border-radius: 15px;
+            width: 420px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #38bdf8;
+        }
+
+        p {
+            text-align: center;
+            font-size: 14px;
+            color: #cbd5f5;
+        }
+
+        label {
+            margin-top: 15px;
+            display: block;
+            font-weight: bold;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        .value {
+            text-align: right;
+            font-size: 13px;
+            color: #93c5fd;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background: #38bdf8;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #0ea5e9;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .low { background: #14532d; }
+        .medium { background: #78350f; }
+        .high { background: #7f1d1d; }
+
+        .shap {
+            font-size: 12px;
+            margin-top: 10px;
+            color: #e5e7eb;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+    <h1>FactoryGuard AI</h1>
+    <p>Real-Time Machine Failure Prediction</p>
+
+    <label>Temperature (°C)</label>
+    <input type="range" min="50" max="100" value="75" id="temperature">
+    <div class="value" id="tempVal">75</div>
+
+    <label>Vibration</label>
+    <input type="range" min="0" max="1" step="0.01" value="0.5" id="vibration">
+    <div class="value" id="vibVal">0.5</div>
+
+    <label>Pressure</label>
+    <input type="range" min="4" max="10" step="0.1" value="6.5" id="pressure">
+    <div class="value" id="pressVal">6.5</div>
+
+    <button onclick="predict()">Predict Failure Risk</button>
+
+    <div id="result" class="result">
+        <h3 id="riskText"></h3>
+        <p id="probText"></p>
+        <div class="shap" id="shapText"></div>
+    </div>
+</div>
+
+<script>
+    const temp = document.getElementById("temperature");
+    const vib = document.getElementById("vibration");
+    const press = document.getElementById("pressure");
+
+    temp.oninput = () => tempVal.innerText = temp.value;
+    vib.oninput = () => vibVal.innerText = vib.value;
+    press.oninput = () => pressVal.innerText = press.value;
+
+    async function predict() {
+        const response = await fetch("/predict", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                temperature: Number(temp.value),
+                vibration: Number(vib.value),
+                pressure: Number(press.value)
+            })
+        });
+
+        const data = await response.json();
+
+        const box = document.getElementById("result");
+        box.style.display = "block";
+        box.className = "result " + data.risk_level.toLowerCase();
+
+        document.getElementById("riskText").innerText =
+            "Risk Level: " + data.risk_level;
+
+        document.getElementById("probText").innerText =
+            "Failure Probability: " + data.failure_probability;
+
+        const topFeatures = Object.entries(data.shap_explanation)
+            .sort((a,b) => Math.abs(b[1]) - Math.abs(a[1]))
+            .slice(0,3)
+            .map(f => f[0] + " (" + f[1].toFixed(3) + ")")
+            .join(", ");
+
+        document.getElementById("shapText").innerText =
+            "Top influencing factors: " + topFeatures;
+    }
+</script>
+
+</body>
+</html>
