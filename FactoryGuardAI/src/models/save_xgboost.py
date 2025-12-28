@@ -1,6 +1,4 @@
-# ============================================
 # Save trained XGBoost model for Week 3 (SHAP)
-# ============================================
 
 from pathlib import Path
 import pandas as pd
@@ -49,3 +47,13 @@ model_path = models_dir / "xgboost_model.pkl"
 joblib.dump(model, model_path)
 
 print(f">>> Model saved at: {model_path}")
+
+# --------------------------------------------
+# Save feature column order (CRITICAL for inference)
+# --------------------------------------------
+FEATURE_COLUMNS = X.columns.tolist()
+
+feature_path = models_dir / "feature_columns.pkl"
+joblib.dump(FEATURE_COLUMNS, feature_path)
+
+print(f">>> Feature columns saved at: {feature_path}")
